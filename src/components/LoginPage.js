@@ -3,13 +3,12 @@ import { useDispatch } from "react-redux";
 import { login } from "../redux/actions/authActions";
 import { useAuth } from "../context/AuthContext";
 import { Navigate } from "react-router-dom";
-
 const LoginPage = () => {
   const dispatch = useDispatch();
   const { isAuthenticated, loading } = useAuth();
 
   if (loading) {
-    return <div>Loading...</div>; // Show a loading state while authentication status is being determined
+    return <div style={styles.container}> </div>; // Show a loading state while authentication status is being determined
   }
 
   if (isAuthenticated) {
@@ -26,11 +25,26 @@ const LoginPage = () => {
   };
 
   return (
-    <div>
-      <h2>Login</h2>
+    <div style={styles.container}>
+        <h2>Login</h2>
       <button onClick={handleSignIn}>Sign in with Google</button>
     </div>
   );
+};
+
+const styles = {
+  container: {
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    height: "100vh",
+    backgroundColor: "#333",
+    color: "#fff",
+  },
+  email: {
+    fontSize: "24px",
+    textAlign: "center",
+  },
 };
 
 export default LoginPage;

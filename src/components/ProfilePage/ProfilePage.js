@@ -1,19 +1,24 @@
-// src/components/Profile.js
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { updateUserProfile } from "../../redux/actions/authActions"; // Ensure you have an action for updating profile
-import { useAuth } from "../../context/AuthContext";
+import { updateUserProfile } from "../../redux/actions/authActions"; 
+import ProfilePicture from "../ProfilePicutre/ProfilePicture";
+import { auth } from "../../services/firebase";
+import { getStorage, ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
+import { v4 as uuidv4 } from "uuid";
+import { CircularProgress, TextField, Button, Typography,  Fade,IconButton ,Box} from '@mui/material';
+import "./ProfilePage.css";
+import EditIcon from "@mui/icons-material/Edit"
+import { useNavigate } from "react-router-dom";
 
 const Profile = () => {
-  const { user } = useAuth();
   const dispatch = useDispatch();
+  const navigator = useNavigate();
   const {
     error: updateError,
     success: updateSuccess,
     user: userData,
-  } = useSelector((state) => {
-    return state;
-  });
+    loading:isLoading
+  } = useSelector((state) => state);
 
   const [profileData, setProfileData] = useState({
     username: userData?.username || "",
@@ -25,17 +30,78 @@ const Profile = () => {
       notifications: true,
       language: "en",
     },
+    followers:userData?.followers || [],
+    following:userData?.following || [],
     address: userData?.address || "",
     phone: userData?.phone || "",
     favorite_games: userData?.favorite_games || [],
   });
 
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(isLoading);
+  const [uploadProgress, setUploadProgress] = useState(0);
+  const [selectedFile, setSelectedFile] = useState(null);
+  const fileInputRef = useRef(null);
+  const [fadeIn, setFadeIn] = useState(false);
 
   useEffect(() => {
+    setFadeIn(true); // Trigger fade-in effect on component mount
+  }, []);
+
+
+  const uploadFile = async (file) => {
+    const storage = getStorage();
+    const uniqueFileName = `${uuidv4()}-${file.name}`;
+    const storageRef = ref(storage, `profile_pics/${auth.currentUser.uid}/${uniqueFileName}`);
+    const uploadTask = uploadBytesResumable(storageRef, file);
+
+    return new Promise((resolve, reject) => {
+      uploadTask.on(
+        "state_changed",
+        (snapshot) => {
+          const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+          setUploadProgress(progress);
+        },
+        (error) => {
+          reject(error);
+        },
+        () => {
+          getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
+            resolve(downloadURL);
+          });
+        }
+      );
+    });
+  };
+
+  const handleFileChange = async (e) => {
+    const file = e.target.files[0];
+    setLoading(true);
+    if (file) {
+      setSelectedFile(file);
+      try {
+        let profilePicUrl = await uploadFile(file);
+        const tempData = {
+          ...profileData,
+          profilePicUrl: profilePicUrl,
+        };
+        dispatch(updateUserProfile(tempData));
+        setProfileData(tempData);
+        setLoading(false);
+        setSelectedFile(null);
+      } catch (err) {
+        setLoading(false);
+      }
+    }
+  };
+
+  useEffect(() => {
+    setLoading(isLoading);
+
     setProfileData({
       username: userData?.username || "",
       email: userData?.email || "",
+      followers:userData?.followers || [],
+      following:userData?.following || [],
       profilePicUrl: userData?.profilePicUrl || "",
       bio: userData?.bio || "",
       settings: userData?.settings || {
@@ -47,20 +113,13 @@ const Profile = () => {
       phone: userData?.phone || "",
       favorite_games: userData?.favorite_games || [],
     });
-  }, [userData]);
-
+  }, [userData,isLoading]);
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setProfileData({ ...profileData, [name]: value });
   };
 
-  const handleSettingsChange = (e) => {
-    const { name, value } = e.target;
-    setProfileData((prevState) => ({
-      ...prevState,
-      settings: { ...prevState.settings, [name]: value },
-    }));
-  };
+
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -68,144 +127,130 @@ const Profile = () => {
 
     try {
       dispatch(updateUserProfile(profileData));
-      setLoading(false);
     } catch (err) {
       setLoading(false);
     }
   };
 
+  const handleAbort = async(e)=>{
+    e.preventDefault();
+    navigator("/")
+  }
+
   return (
-    <div>
+    <Fade in={fadeIn} timeout={1000}>
+    <div className="profile-container ">
       {loading && (
-        <div className="overlay">
-          <div className="spinner">Loading...</div>
+        <div className="loading-overlay">
+          <CircularProgress color="primary" />
         </div>
       )}
 
-      {updateSuccess && (
-        <div className="alert alert-success">{updateSuccess}</div>
-      )}
-      {updateError && <div className="alert alert-error">{updateError}</div>}
-
-      <form onSubmit={handleSubmit}>
-        <div>
-          <label htmlFor="username">Username:</label>
-          <input
-            type="text"
-            id="username"
+      <div className="profile-form">
+        <form onSubmit={handleSubmit} >
+          <div style={{display:"flex",paddingBlock:20,justifyContent:"space-between "}}>
+          <div className="form-group">
+            <div onClick={()=>fileInputRef.current.click()}>
+            <ProfilePicture  profilePicUrl={profileData.profilePicUrl} />
+            </div>
+                <input
+                  type="file"
+                  ref={fileInputRef}
+                  style={{ display: 'none' }}
+                  onChange={handleFileChange}
+                />
+            {selectedFile && (
+              <div className="progress-container">
+                <div className="progress-bar-container">
+                  <div
+                    className="progress-bar"
+                    style={{ width: `${uploadProgress}%` }}
+                  ></div>
+                </div>
+              </div>
+            )}
+          </div>
+          <div className="follow-stats">
+            <Box textAlign={"center"}>
+            <Typography variant="body2">
+                  Followers
+                </Typography>
+            <Typography variant="body1">
+                  {profileData.followers.length}
+                </Typography>
+            </Box>
+            <Box textAlign={"center"}>
+            <Typography variant="body2">
+                  Following
+                </Typography>
+            <Typography variant="body1">
+                  {profileData.following.length}
+                </Typography>
+            </Box>
+              
+              </div>
+          </div>
+       
+          <TextField
+            label="Username"
             name="username"
             value={profileData.username}
             onChange={handleInputChange}
+            fullWidth
+            margin="normal"
+            variant="outlined"
             required
           />
-        </div>
-        <div>
-          <label htmlFor="email">Email:</label>
-          <input
-            type="email"
-            id="email"
+          <TextField
+            label="Email"
             name="email"
+            type="email"
+            disabled={true  }
             value={profileData.email}
             onChange={handleInputChange}
+            fullWidth
+            margin="normal"
+            variant="outlined"
             required
           />
-        </div>
-        <div>
-          <label htmlFor="profilePicUrl">Profile Picture URL:</label>
-          <input
-            type="text"
-            id="profilePicUrl"
-            name="profilePicUrl"
-            value={profileData.profilePicUrl}
-            onChange={handleInputChange}
-          />
-        </div>
-        <div>
-          <label htmlFor="bio">Bio:</label>
-          <textarea
-            id="bio"
+          <TextField
+            label="Bio"
             name="bio"
             value={profileData.bio}
             onChange={handleInputChange}
+            fullWidth
+            margin="normal"
+            variant="outlined"
+            multiline
+            rows={4}
           />
-        </div>
-        <div>
-          <label htmlFor="theme">Theme:</label>
-          <select
-            id="theme"
-            name="theme"
-            value={profileData.settings.theme}
-            onChange={handleSettingsChange}
-          >
-            <option value="light">Light</option>
-            <option value="dark">Dark</option>
-          </select>
-        </div>
-        <div>
-          <label htmlFor="notifications">Notifications:</label>
-          <input
-            type="checkbox"
-            id="notifications"
-            name="notifications"
-            checked={profileData.settings.notifications}
-            onChange={(e) =>
-              handleSettingsChange({
-                target: { name: "notifications", value: e.target.checked },
-              })
-            }
-          />
-        </div>
-        <div>
-          <label htmlFor="language">Language:</label>
-          <select
-            id="language"
-            name="language"
-            value={profileData.settings.language}
-            onChange={handleSettingsChange}
-          >
-            <option value="en">English</option>
-            <option value="es">Spanish</option>
-            {/* Add other languages as needed */}
-          </select>
-        </div>
-        <div>
-          <label htmlFor="address">Address:</label>
-          <input
-            type="text"
-            id="address"
-            name="address"
-            value={profileData.address}
-            onChange={handleInputChange}
-          />
-        </div>
-        <div>
-          <label htmlFor="phone">Phone:</label>
-          <input
-            type="text"
-            id="phone"
-            name="phone"
-            value={profileData.phone}
-            onChange={handleInputChange}
-          />
-        </div>
-        <div>
-          <label htmlFor="favorite_games">Favorite Games:</label>
-          <textarea
-            id="favorite_games"
-            name="favorite_games"
-            value={profileData.favorite_games.join(", ")}
-            onChange={(e) =>
-              setProfileData({
-                ...profileData,
-                favorite_games: e.target.value.split(", "),
-              })
-            }
-            rows="3"
-          />
-        </div>
-        <button type="submit">Update Profile</button>
-      </form>
+          <div style={{display:"flex", gap:"10px",justifyContent:"center"}}>
+          <Button  variant="contained" color="error" onClick={(e)=>handleAbort(e)}>
+            Back
+          </Button>
+          <Button type="submit" variant="contained" color="primary" >
+            Update Profile
+          </Button>
+         
+          </div>
+
+          <br/>
+          <br/>
+
+          {updateSuccess && (
+          <Typography color="success" variant="body2">
+            {updateSuccess}
+          </Typography>
+        )}
+        {updateError && (
+          <Typography color="error" variant="body2">
+            {updateError}
+          </Typography>
+        )}
+        </form>
+      </div>
     </div>
+    </Fade>
   );
 };
 

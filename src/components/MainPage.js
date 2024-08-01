@@ -1,72 +1,33 @@
-import React, { useState } from "react";
-import { logout } from "../redux/actions/authActions";
-import { useDispatch, useSelector } from "react-redux";
-import { useNavigate } from "react-router-dom";
-import ConfirmationDialog from "./ConfirmationDialog/ConfirmationDialog";
-import ProfilePicture from "./ProfilePicutre/ProfilePicture";
+import React, { useEffect, useState } from "react";
+import {  useSelector } from "react-redux";
+import CircularProgress from '@mui/material/CircularProgress';
+import { Fade } from '@mui/material';
 
-const MainPage = () => {
-  const user = useSelector((store) => {
-    return store.user;
-  });
+const MainPage  = React.memo(() => {
   const loading = useSelector((store) => {
     return store.loading;
   });
 
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [pendingLogout, setPendingLogout] = useState(false);
+  const [fadeIn, setFadeIn] = useState(false);
 
-  const dispatch = useDispatch();
-  const navigate = useNavigate();
-
-  const handleLogout = async () => {
-    setIsDialogOpen(true);
-    setPendingLogout(true);
-  };
-
-  const handleConfirmLogout = async () => {
-    setIsDialogOpen(false);
-    if (pendingLogout) {
-      dispatch(logout());
-      navigate("/login");
-      setPendingLogout(false);
-    }
-  };
-
-  const handleCancelLogout = () => {
-    setIsDialogOpen(false);
-    setPendingLogout(false);
-  };
+  useEffect(() => {
+    setFadeIn(true); // Trigger fade-in effect on component mount
+  }, []);
 
   return (
     <div style={styles.container}>
       {loading === true ? (
-        <p>Loading</p>
+        <CircularProgress color="success" />
       ) : (
+        <Fade timeout={1000} in={fadeIn}>
         <div>
-          {user && (
-            <>
-              <ProfilePicture profilePicUrl={user.profilePicUrl} />
-              <h1 style={styles.email}>{user?.username}</h1>
-              <div
-                style={{ display: "flex", flexDirection: "column", gap: 10 }}
-              >
-                <button onClick={() => navigate("/profile")}>Profile</button>
-                <button onClick={handleLogout}>Sign out</button>
-              </div>
-              <ConfirmationDialog
-                isOpen={isDialogOpen}
-                onConfirm={handleConfirmLogout}
-                onCancel={handleCancelLogout}
-                message="Are you sure you want to log out?"
-              />
-            </>
-          )}
         </div>
+        </Fade>
+
       )}
     </div>
   );
-};
+});
 
 const styles = {
   container: {

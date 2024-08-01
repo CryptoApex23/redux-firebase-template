@@ -8,11 +8,11 @@ const initialState = {
 const authReducer = (state = initialState, action) => {
   switch (action.type) {
     case "GETTING_DATA":
-      return { ...state, loading: true };
+      return { ...state, loading: true,success:null,error:null };
     case "LOGIN_REQUEST":
-      return { ...state, loading: true };
+      return { ...state, loading: true,success:null,error:null };
     case "LOGIN_SUCCESS":
-      return { ...state, user: action.payload, loading: false };
+      return { ...state, user: action.payload, loading: false,success:"true" };
     case "LOGIN_FAILURE":
       return { ...state, error: action.payload, loading: false };
     case "LOGOUT":
@@ -23,6 +23,12 @@ const authReducer = (state = initialState, action) => {
         user: action.payload,
         loading: false,
       };
+    case "UPDATE_PROFILE_START":
+      return {
+        ...state,
+        success:null,
+        error:null,
+        };
     case "UPDATE_PROFILE_SUCCESS":
       return {
         ...state,

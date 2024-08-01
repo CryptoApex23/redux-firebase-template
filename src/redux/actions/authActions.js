@@ -27,7 +27,7 @@ const defaultUserData = {
   game_points: 100, // Initial game points
   followers: [], // List of user IDs who follow this user
   following: [], // List of user IDs this user is following
-  profilePicUrl: "", // URL to the user's profile picture
+  profilePicUrl: "https://api.multiavatar.com/1231234123fsdfdsf.png", 
   bio: "", // User bio
   created_at: serverTimestamp(), // Timestamp of account creation
   updated_at: serverTimestamp(), // Timestamp of the last profile update
@@ -63,6 +63,8 @@ export const login = () => async (dispatch) => {
       if (!userDoc.exists()) {
         // User does not exist, create with default values
         await setDoc(userRef, defaultUserData);
+        const serializedUserData = convertTimestampToDate(defaultUserData);
+        user = serializedUserData;
       } else {
         // User exists, update last_login if not already set
         const userData = userDoc.data();
@@ -99,6 +101,7 @@ export const logout = () => async (dispatch) => {
 export const updateUserProfile = (profileData) => async (dispatch) => {
   const auth = getAuth();
   const user = auth.currentUser;
+  dispatch({ type: "UPDATE_PROFILE_START"});
 
   try {
     if (user) {
@@ -125,10 +128,12 @@ export const updateUserProfile = (profileData) => async (dispatch) => {
 };
 
 export const fetchUserProfile = () => async (dispatch) => {
+
   dispatch({
     type: "GETTING_DATA",
   });
   const user = auth.currentUser;
+
   if (user) {
     const userDoc = await getDoc(doc(firestore, "users", user.uid));
     if (userDoc.exists()) {
