@@ -135,6 +135,25 @@ Contributions are welcome! If you find any issues or have suggestions for improv
 5. Push to the branch (`git push origin feature/your-feature`)
 6. Open a pull request
 
+## Donations
+BTC
+
+```bash
+bc1qxwlpy6fx33e968uqhw7pr030kvyr3pel0ptxt3
+```
+
+ETH
+
+```bash
+0x8a530A5eC57d7D7944E23Ffc5D85dA09c52C8eda
+```
+
+SOL
+
+```bash
+FCfyeS5LwsjjgGiJKAikYFwPoweBcVLYASjRstEhHaAs
+```
+
 ## License
 
 This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
