@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from "react";
-import {  useSelector } from "react-redux";
-import CircularProgress from '@mui/material/CircularProgress';
-import { Fade } from '@mui/material';
+import { useSelector } from "react-redux";
+import CircularProgress from "@mui/material/CircularProgress";
+import { Fade } from "@mui/material";
 
-const MainPage  = React.memo(() => {
+const MainPage = React.memo(() => {
   const loading = useSelector((store) => {
     return store.loading;
   });
@@ -20,10 +20,8 @@ const MainPage  = React.memo(() => {
         <CircularProgress color="success" />
       ) : (
         <Fade timeout={1000} in={fadeIn}>
-        <div>
-        </div>
+          <div></div>
         </Fade>
-
       )}
     </div>
   );

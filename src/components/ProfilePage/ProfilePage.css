@@ -8,6 +8,13 @@
   padding-top:20px
 }
 
+.profile-view{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 15px;
+}
+
 .loading-overlay {
   position: absolute;
   top: 0;
@@ -69,8 +76,9 @@
 
 .follow-stats {
   display: flex;
-  justify-content: flex-end;
+  justify-content: center;
   gap: 50px;
   width: 100%;
   align-items: center;
+  flex-wrap: wrap;
 }

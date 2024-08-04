@@ -1,6 +1,5 @@
 html, body {
   margin: 0;
-  height: 80%;
 }
 
 .App {
@@ -8,6 +7,17 @@ html, body {
   display: flex;
   align-items: center;
   justify-content: center;
+}
+
+.main-content {
+  margin-left: 250px;
+  padding: 20px;
+}
+
+@media (max-width: 600px) {
+  .main-content {
+    margin-left: 0;
+  }
 }
 
 .centered-container {

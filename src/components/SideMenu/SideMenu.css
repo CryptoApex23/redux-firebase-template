@@ -1,0 +1,21 @@
+/* SideMenu.css */
+.side-menu {
+    width: 250px;
+    position: fixed;
+    background: transparent;
+    color: #fff;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 20px 0;
+  }
+  
+  .menu-item {
+    transition: all 0.3s ease;
+  }
+  
+  .menu-item:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+    transform: translateX(10px);
+  }
+  

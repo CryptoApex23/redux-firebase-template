@@ -27,7 +27,7 @@ const defaultUserData = {
   game_points: 100, // Initial game points
   followers: [], // List of user IDs who follow this user
   following: [], // List of user IDs this user is following
-  profilePicUrl: "https://api.multiavatar.com/1231234123fsdfdsf.png", 
+  profilePicUrl: "https://api.multiavatar.com/1231234123fsdfdsf.png",
   bio: "", // User bio
   created_at: serverTimestamp(), // Timestamp of account creation
   updated_at: serverTimestamp(), // Timestamp of the last profile update
@@ -101,8 +101,7 @@ export const logout = () => async (dispatch) => {
 export const updateUserProfile = (profileData) => async (dispatch) => {
   const auth = getAuth();
   const user = auth.currentUser;
-  dispatch({ type: "UPDATE_PROFILE_START"});
-
+  dispatch({ type: "UPDATE_PROFILE_START" });
   try {
     if (user) {
       await updateProfile(user, {
@@ -127,15 +126,13 @@ export const updateUserProfile = (profileData) => async (dispatch) => {
   }
 };
 
-export const fetchUserProfile = () => async (dispatch) => {
-
+export const fetchUserProfile = (userId) => async (dispatch) => {
   dispatch({
     type: "GETTING_DATA",
   });
   const user = auth.currentUser;
-
   if (user) {
-    const userDoc = await getDoc(doc(firestore, "users", user.uid));
+    const userDoc = await getDoc(doc(firestore, "users", userId));
     if (userDoc.exists()) {
       const userData = userDoc.data();
       const serializedUserData = convertTimestampToDate(userData);
