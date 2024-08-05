@@ -1,0 +1,17 @@
+.chat-bubble {
+    position: relative;
+    margin: 5px 0;
+  }
+  
+  .own-message {
+    background-color: #0084ff;
+    color: white;
+    align-self: flex-end;
+  }
+  
+  .other-message {
+    background-color: #e5e5ea;
+    color: black;
+    align-self: flex-start;
+  }
+  

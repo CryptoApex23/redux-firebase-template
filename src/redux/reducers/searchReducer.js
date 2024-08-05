@@ -2,6 +2,7 @@ import {
   SEARCH_USERS_REQUEST,
   SEARCH_USERS_SUCCESS,
   SEARCH_USERS_FAILURE,
+  RESET_SEARCH_RESULTS
 } from "../actions/searchActions";
 
 const initialState = {
@@ -18,6 +19,8 @@ const searchReducer = (state = initialState, action) => {
       return { ...state, loading: false, searchResults: action.payload };
     case SEARCH_USERS_FAILURE:
       return { ...state, loading: false, error: action.payload };
+    case RESET_SEARCH_RESULTS:
+        return { ...state, searchResults: [] };
     default:
       return state;
   }

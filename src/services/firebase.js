@@ -1,6 +1,12 @@
 import { initializeApp } from "firebase/app";
 import { getAuth, GoogleAuthProvider, signInWithPopup } from "firebase/auth";
 import {
+  collection,
+  addDoc,
+  query,
+  orderBy,
+  onSnapshot,
+  deleteDoc,
   getFirestore,
   doc,
   setDoc,
@@ -8,6 +14,7 @@ import {
   serverTimestamp,
   updateDoc,
 } from "firebase/firestore";
+import { getDatabase } from "firebase/database";
 
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
@@ -22,18 +29,27 @@ const firebaseConfig = {
   messagingSenderId: process.env.REACT_APP_FIREBASE_MESSAGING_SENDER_ID,
   appId: process.env.REACT_APP_FIREBASE_APP_ID,
   measurementId: process.env.REACT_APP_MEASURMENT_ID,
+  databaseUrl:"https://redux-playground-c97a2-default-rtdb.europe-west1.firebasedatabase.app/"
 };
 
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const firestore = getFirestore(app);
+const database = getDatabase(app,"https://redux-playground-c97a2-default-rtdb.europe-west1.firebasedatabase.app/");
 
 export {
   auth,
   firestore,
+  database,
   GoogleAuthProvider,
   signInWithPopup,
   doc,
+  collection,
+  addDoc,
+  query,
+  orderBy,
+  onSnapshot,
+  deleteDoc,
   setDoc,
   getDoc,
   updateDoc,

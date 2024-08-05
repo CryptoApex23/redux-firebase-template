@@ -3,6 +3,11 @@ import { searchUsersByUsername } from "../../services/firestore";
 export const SEARCH_USERS_REQUEST = "SEARCH_USERS_REQUEST";
 export const SEARCH_USERS_SUCCESS = "SEARCH_USERS_SUCCESS";
 export const SEARCH_USERS_FAILURE = "SEARCH_USERS_FAILURE";
+export const RESET_SEARCH_RESULTS = 'RESET_SEARCH_RESULTS';
+
+export const resetSearchResults = () => ({
+  type: RESET_SEARCH_RESULTS,
+});
 
 export const searchUsers = (username) => async (dispatch) => {
   dispatch({ type: SEARCH_USERS_REQUEST });

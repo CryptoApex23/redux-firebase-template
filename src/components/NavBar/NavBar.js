@@ -26,7 +26,6 @@ import { logout } from "../../redux/actions/authActions";
 import LoginIcon from "@mui/icons-material/Login";
 import { auth } from "../../services/firebase";
 import menuItems from "../../utils/menu_items";
-
 const settings = ["Profile", "Logout"];
 
 const NavBar = () => {
@@ -44,6 +43,8 @@ const NavBar = () => {
     }
     handleCloseUserMenu();
   };
+
+
 
   const [anchorElUser, setAnchorElUser] = React.useState(null);
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -87,11 +88,11 @@ const NavBar = () => {
 
   return (
     <>
-      <AppBar position="static" color="primary">
-        <Container maxWidth="xl">
+      <AppBar position="static" style={{ background: 'transparent', boxShadow: 'none'}}>
+        <Container maxWidth="2xl">
           <Toolbar
             disableGutters
-            style={{ display: "flex", justifyContent: "space-between" }}
+            style={{ display: "flex", justifyContent: "space-between"}}
           >
             <AdbIcon sx={{ display: { xs: "none", md: "flex" }, mr: 1 }} />
             <Typography

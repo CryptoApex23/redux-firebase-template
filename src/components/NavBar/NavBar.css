@@ -1,7 +1,7 @@
 /* src/components/NavBar.css */
 .appBar {
-  background-color: #333;
-  color: #fff;
+  background-color: transparent;
+  color: transparent;
 }
 
 .title {

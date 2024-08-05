@@ -8,8 +8,8 @@ import {
   useMediaQuery,
   useTheme,
 } from "@mui/material";
+import { useNavigate, useLocation } from "react-router-dom"; // Import useLocation
 import "./SideMenu.css";
-import { useNavigate } from "react-router-dom";
 import menuItems from "../../utils/menu_items";
 import { auth } from "../../services/firebase";
 import { useAuth } from "../../context/AuthContext";
@@ -17,14 +17,23 @@ import { useAuth } from "../../context/AuthContext";
 const SideMenu = () => {
   const theme = useTheme();
   const navigate = useNavigate();
+  const location = useLocation(); // Get current location
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
   const [open, setOpen] = useState(false);
   const { isAuthenticated } = useAuth();
+  
   const handleDrawerToggle = () => {
     setOpen(!open);
   };
 
   useEffect(() => {}, [isAuthenticated]);
+
+  const isActive = (path) => {
+    if (path === "profile") {
+      return location.pathname.startsWith(`/profile/`);
+    }
+    return location.pathname === `/${path}`;
+  };
 
   const drawer = (
     <List>
@@ -32,7 +41,7 @@ const SideMenu = () => {
         <ListItem
           style={{ cursor: "pointer" }}
           key={index + "_menu_item"}
-          className="menu-item"
+          className={`menu-item ${isActive(item.path) ? "active" : ""}`} // Conditionally add "active" class
           onClick={() => {
             if (item.path === "profile") {
               navigate(`/` + item.path + "/" + auth.currentUser.uid);

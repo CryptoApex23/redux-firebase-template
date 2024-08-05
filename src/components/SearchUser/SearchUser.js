@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { searchUsers } from "../../redux/actions/searchActions";
+import { searchUsers, resetSearchResults } from "../../redux/actions/searchActions"; // Import the resetSearchResults action
+
 import {
   TextField,
   List,
@@ -18,9 +19,8 @@ const SearchUser = () => {
   const [query, setQuery] = useState("");
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const { searchResults, loading, error } = useSelector((state) => {
-    return state.search;
-  });
+  const { searchResults, loading, error } = useSelector((state) => state.search);
+
   const handleSearch = (event) => {
     setQuery(event.target.value);
     if (event.target.value.length > 3) {
@@ -28,14 +28,19 @@ const SearchUser = () => {
     }
   };
 
-  useEffect(() => {}, []);
+  useEffect(() => {
+    // Cleanup function to reset search results when component unmounts
+    return () => {
+      dispatch(resetSearchResults());
+    };
+  }, [dispatch, navigate]);
+
   return (
     <Box
       sx={{
         display: "flex",
         flexDirection: "column",
         alignItems: "flex-start",
-
         mt: 4,
       }}
     >
@@ -49,7 +54,7 @@ const SearchUser = () => {
           borderRadius: "8px",
           width: {
             xs: "100%", // full width on mobile
-            sm: "50%", // 50% width on desktop
+            sm: "100%", // 50% width on desktop
           },
           "& .MuiOutlinedInput-root": {
             borderRadius: "8px",
@@ -70,7 +75,6 @@ const SearchUser = () => {
               },
               transition: "background-color 0.3s", // Smooth transition for hover effect
             }}
-            style={{ cursor: "pointer" }}
             onClick={() => {
               navigate("/profile/" + user.id);
             }}

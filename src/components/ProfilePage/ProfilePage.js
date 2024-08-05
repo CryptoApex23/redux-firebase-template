@@ -22,6 +22,7 @@ import "./ProfilePage.css";
 import { Navigate, useNavigate, useParams } from "react-router-dom";
 import { doc, getDoc } from "firebase/firestore";
 import { useAuth } from "../../context/AuthContext";
+import { createChat } from "../../services/firestore";
 
 const Profile = () => {
   const dispatch = useDispatch();
@@ -144,6 +145,11 @@ const Profile = () => {
   const handleAbort = async (e) => {
     e.preventDefault();
     navigate(-1);
+  };
+
+  const handleChatButtonClick = async () => {
+    const chatId = await createChat([auth.currentUser.uid, userId]);
+    navigate(`/chat/${chatId}`);
   };
 
   if (!profileData) {
@@ -325,6 +331,9 @@ const Profile = () => {
                 <Typography color={"grey"} fontSize={12} variant="body1">
                   Following
                 </Typography>
+                <Button variant="contained" onClick={handleChatButtonClick}>
+        Chat
+      </Button>
               </Box>
             </div>
             <Typography variant="body1" textAlign="center">
